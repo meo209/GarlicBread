@@ -1,25 +1,18 @@
 package com.meo209.garlicbread.module
 
-import com.meo209.garlicbread.module.impl.CrashModule
+import com.meo209.garlicbread.module.impl.StrafeModule
 
 object ModuleRegistry {
 
     val modules = mutableListOf<Module>()
 
     fun init() {
-        register(CrashModule())
-    }
-
-    fun stop() {
-        modules.forEach { module: Module ->
-            module.config.saveConfig()
-        }
+        register(StrafeModule())
     }
 
     private fun register(module: Module) {
-        modules.add(module.apply {
-            config.loadConfig()
-        })
+        modules.add(module)
+        module.load()
     }
 
     fun handleKey(key: Int) {

@@ -6,6 +6,8 @@ import com.meo209.garlicbread.event.EventBus
 import com.meo209.garlicbread.event.EventListener
 import com.meo209.garlicbread.event.impl.ModuleDisableEvent
 import com.meo209.garlicbread.event.impl.ModuleEnableEvent
+import com.meo209.garlicbread.event.impl.ShutdownEvent
+import com.meo209.garlicbread.event.impl.TickEvent
 import com.meo209.garlicbread.module.ModuleRegistry
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
@@ -29,7 +31,7 @@ class Garlicbread : ClientModInitializer {
 
     companion object {
         fun stop() {
-            ModuleRegistry.stop()
+            EventBus.fire(ShutdownEvent())
         }
     }
 
@@ -39,6 +41,7 @@ class Garlicbread : ClientModInitializer {
         FileManager.init()
 
         CommandRegistry.init()
+
         ModuleRegistry.init()
 
         EventBus.register(ModuleEnableEvent::class, object : EventListener<ModuleEnableEvent> {
@@ -71,6 +74,8 @@ class Garlicbread : ClientModInitializer {
         if (isFlying) {
             enableFlying(player)
         }
+
+        EventBus.fire(TickEvent())
     }
 
     private fun enableFlying(player: ClientPlayerEntity) {
