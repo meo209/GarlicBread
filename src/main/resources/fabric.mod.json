@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "garlicbread",
+  "version": "${version}",
+  "name": "GarlicBread",
+  "description": "Minecraft exploitation mod.",
+  "authors": [],
+  "contact": {},
+  "license": "GPL-3.0",
+  "icon": "assets/garlicbread/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.meo209.garlicbread.Garlicbread"
+    ]
+  },
+  "mixins": [
+    "garlicbread.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-language-kotlin": ">=${kotlin_loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
