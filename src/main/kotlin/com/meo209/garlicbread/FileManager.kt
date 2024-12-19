@@ -7,11 +7,12 @@ object FileManager {
 
     val ROOT_DIRECTORY = File(FabricLoader.getInstance().configDir.toFile(), "garlicbread")
 
-    val MODULES_DIRECTORY = File(ROOT_DIRECTORY, "modules")
+    val HISTORY_FILE = File(ROOT_DIRECTORY, "terminal_history.txt")
 
     fun init() {
         if (!ROOT_DIRECTORY.exists()) ROOT_DIRECTORY.mkdirs()
-        if (!MODULES_DIRECTORY.exists()) MODULES_DIRECTORY.mkdirs()
+
+        if (!HISTORY_FILE.exists()) HISTORY_FILE.createNewFile()
     }
 
 }

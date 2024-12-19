@@ -7,7 +7,7 @@
   "authors": [],
   "contact": {},
   "license": "GPL-3.0",
-  "icon": "assets/garlicbread/icon.png",
+  "icon": "assets/garlicbread/garlicbread.png",
   "environment": "client",
   "entrypoints": {
     "client": [

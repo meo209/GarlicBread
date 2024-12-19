@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     kotlin("jvm") version "2.1.0"
@@ -36,6 +37,15 @@ repositories {
     maven {
         url = uri("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
     }
+
+    maven {
+        url = uri("https://maven.wispforest.io/releases/")
+    }
+
+    maven {
+        name = "Jitpack"
+        url = uri("https://jitpack.io")
+    }
 }
 
 fun property(s: String): Any? =
@@ -50,11 +60,17 @@ dependencies {
 
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
 
-    modImplementation(include("io.github.cottonmc:LibGui:${property("libgui_version")}")!!)
-
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
 
     include("com.google.code.gson:gson:2.11.0")
+
+    modImplementation(include("io.github.0x3c50.renderer:renderer-fabric:1.2.5")!!)
+
+    modImplementation("io.wispforest:owo-lib:${property("owo_version")}")
+    include("io.wispforest:owo-sentinel:${property("owo_version")}")
+
+    implementation("io.github.revxrsal:lamp.common:${property("lamp_version")}")
+    implementation("com.github.JnCrMx:discord-game-sdk4j:${property("discord_game_sdk4j_version")}")
 }
 
 tasks.processResources {
@@ -80,10 +96,20 @@ tasks.withType<JavaCompile>().configureEach {
     // If Javadoc is generated, this must be specified in that task too.
     options.encoding = "UTF-8"
     options.release.set(targetJavaVersion)
+    options.compilerArgs.add("-parameters")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions.jvmTarget.set(JvmTarget.fromTarget(targetJavaVersion.toString()))
+    compilerOptions {
+        javaParameters = true
+    }
+}
+
+tasks.withType<KotlinJvmCompile> {
+    compilerOptions {
+        javaParameters = true
+    }
 }
 
 tasks.jar {
