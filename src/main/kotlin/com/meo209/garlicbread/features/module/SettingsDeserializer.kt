@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
-import com.meo209.garlicbread.features.module.impl.DebugModule
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 
@@ -12,12 +11,9 @@ class SettingsDeserializer : JsonDeserializer<Module.Settings>() {
 
     override fun deserialize(parser: JsonParser, ctx: DeserializationContext): Module.Settings {
         val node: JsonNode = parser.readValueAsTree()
-        val type = node.get("type")?.asText()
+        val type = node.get("type").asText()!!
 
-        val clazz = when (type) {
-            "DebugSettings" -> DebugModule.DebugSettings::class.java
-            else -> throw IllegalArgumentException("Unknown type: $type")
-        }
+        val clazz = ModuleSystem.findModuleByName(type.removeSuffix("Settings")).settingInstance::class.java
 
         // Find the constructor that takes a JsonNode as a parameter
         val constructor: Constructor<out Module.Settings> = clazz.getDeclaredConstructor()
