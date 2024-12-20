@@ -21,13 +21,15 @@ object Terminal {
         lamp.register(ServerCommand())
         lamp.register(ClearCommand())
         lamp.register(HistoryCommand())
+        lamp.register(PlayerCommand())
+        lamp.register(TestCommand())
     }
 
     fun dispatch(input: String) {
         lamp.dispatch(TerminalActor(), input)
     }
 
-    class TerminalActor: CommandActor {
+    class TerminalActor : CommandActor {
 
         val logger: Logger = LoggerFactory.getLogger("Terminal")
 
