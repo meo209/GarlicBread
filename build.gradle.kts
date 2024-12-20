@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     kotlin("jvm") version "2.1.0"
+    kotlin("plugin.serialization") version "2.1.0"
     id("fabric-loom") version "1.9.2"
     id("maven-publish")
 }
@@ -60,9 +61,9 @@ dependencies {
 
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
 
-    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
 
-    include("com.google.code.gson:gson:2.11.0")
+    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
 
     modImplementation(include("io.github.0x3c50.renderer:renderer-fabric:1.2.5")!!)
 
@@ -71,6 +72,12 @@ dependencies {
 
     implementation("io.github.revxrsal:lamp.common:${property("lamp_version")}")
     implementation("com.github.JnCrMx:discord-game-sdk4j:${property("discord_game_sdk4j_version")}")
+
+    modImplementation(include(kotlin("reflect"))!!)
+
+    modImplementation(include("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")!!)
+
+    modImplementation(include("com.github.meo209:KeventBus:${property("keventbus_version")}")!!)
 }
 
 tasks.processResources {

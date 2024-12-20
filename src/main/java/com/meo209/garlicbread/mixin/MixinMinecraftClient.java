@@ -1,6 +1,8 @@
 package com.meo209.garlicbread.mixin;
 
+import com.github.meo209.keventbus.EventBus;
 import com.meo209.garlicbread.Garlicbread;
+import com.meo209.garlicbread.events.ShutdownEvent;
 import com.meo209.garlicbread.utils.PerformanceMonitor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
@@ -23,13 +25,15 @@ public class MixinMinecraftClient {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void initTail(RunArgs args, CallbackInfo ci) {
+        Garlicbread.Companion.lateInit();
         long bootTimeEnd = System.currentTimeMillis();
         long bootTime = (bootTimeEnd - bootTimeStart);
         PerformanceMonitor.INSTANCE.setBootTime(bootTime);
+
     }
 
     @Inject(method = "stop", at = @At("HEAD"))
-    public void stop(CallbackInfo ci) {
-        Garlicbread.Companion.stop();
+    private void stop(CallbackInfo ci) {
+        EventBus.Companion.global().post(new ShutdownEvent());
     }
 }
