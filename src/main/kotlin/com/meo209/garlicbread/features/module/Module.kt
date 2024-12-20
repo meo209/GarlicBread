@@ -1,36 +1,35 @@
 package com.meo209.garlicbread.features.module
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.module.SimpleModule
 import com.github.meo209.keventbus.EventBus
+import com.google.gson.GsonBuilder
 import com.meo209.garlicbread.FileManager
+import com.meo209.garlicbread.events.KeyPressEvent
+import com.meo209.garlicbread.events.ModuleDisableEvent
+import com.meo209.garlicbread.events.ModuleEnableEvent
 import com.meo209.garlicbread.events.ShutdownEvent
 import com.meo209.garlicbread.utils.Initializable
 import java.io.File
 
-abstract class Module(val name: String, var enabled: Boolean = false) : Initializable {
+abstract class Module(val name: String, val category: ModuleCategory) : Initializable {
 
-    abstract val settingInstance: Settings
+    abstract val settings: Settings
     private val settingFile = File(FileManager.MODULE_DIRECTORY, "$name.json")
 
-    private val objectMapper: ObjectMapper = ObjectMapper().apply {
-        val module = SimpleModule()
-        module.addSerializer(Settings::class.java, SettingsSerializer())
-        module.addDeserializer(Settings::class.java, SettingsDeserializer())
-        this.registerModule(module)
-    }
+    private val gson = GsonBuilder()
+        .registerTypeAdapter(Settings::class.java, SettingsTypeAdapter())
+        .create()
 
     override fun init() {
         if (settingFile.exists() && settingFile.readText().isNotEmpty()) {
-            val loadedSettings = objectMapper.readValue(settingFile.readText(), Settings::class.java)
+            val loadedSettings = gson.fromJson(settingFile.readText(), Settings::class.java)
 
-            settingInstance::class.java.declaredFields.forEach { field ->
+            settings::class.java.declaredFields.forEach { field ->
                 if (field.name == "INSTANCE") return@forEach // Skip companion object INSTANCE field
 
                 val loadedField = loadedSettings::class.java.declaredFields.first { it.name == field.name }
                 field.isAccessible = true
                 loadedField.isAccessible = true
-                field.set(settingInstance, loadedField.get(loadedSettings))
+                field.set(settings, loadedField.get(loadedSettings))
             }
         }
 
@@ -38,9 +37,49 @@ abstract class Module(val name: String, var enabled: Boolean = false) : Initiali
             println("Saving $name module")
             if (!settingFile.exists()) settingFile.createNewFile()
 
-            settingFile.writeText(objectMapper.writeValueAsString(settingInstance))
+            settingFile.writeText(gson.toJson(settings))
+        }
+
+        registerHandlers(EventBus.global())
+    }
+
+    open fun registerHandlers(eventBus: EventBus) {}
+
+    fun enable(eventBus: EventBus) {
+        settings.enabled = true
+        eventBus.post(ModuleEnableEvent(this))
+    }
+
+    fun disable(eventBus: EventBus) {
+        settings.enabled = false
+        eventBus.post(ModuleEnableEvent(this))
+    }
+
+    fun registerToggleHandler(eventBus: EventBus, key: Int, onEnable: () -> Unit = {}, onDisable: () -> Unit = {}) {
+        eventBus.handler(KeyPressEvent::class) { keyPressEvent ->
+            if (keyPressEvent.key == key) {
+                settings.enabled = !settings.enabled
+
+                if (settings.enabled) {
+                    onEnable()
+                    eventBus.post(ModuleEnableEvent(this))
+                } else {
+                    onDisable()
+                    eventBus.post(ModuleDisableEvent(this))
+                }
+            }
         }
     }
 
-    abstract class Settings
+    abstract class Settings {
+        /**
+         * Used for polymorphic serialization
+         */
+        public val type = javaClass.name
+
+        /**
+         * Is enabled
+         */
+        var enabled: Boolean = false
+    }
 }

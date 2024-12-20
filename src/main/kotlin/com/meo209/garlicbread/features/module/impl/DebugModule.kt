@@ -1,15 +1,17 @@
 package com.meo209.garlicbread.features.module.impl
 
 import com.meo209.garlicbread.features.module.Module
+import com.meo209.garlicbread.features.module.ModuleCategory
 
-class DebugModule : Module(name = "Debug") {
+class DebugModule : Module(name = "Debug", ModuleCategory.OTHER) {
 
-    override val settingInstance: DebugSettings = DebugSettings()
+    override val settings: DebugSettings
+        get() = DebugSettings()
 
     override fun init() {
         super.init()
 
-        println(settingInstance.debugSetting)
+        println(settings.debugSetting)
     }
 
     class DebugSettings : Settings() {

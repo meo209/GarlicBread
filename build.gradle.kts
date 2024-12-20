@@ -61,8 +61,6 @@ dependencies {
 
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
-
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${property("devauth_version")}")
 
     modImplementation(include("io.github.0x3c50.renderer:renderer-fabric:1.2.5")!!)
@@ -74,8 +72,6 @@ dependencies {
     implementation("com.github.JnCrMx:discord-game-sdk4j:${property("discord_game_sdk4j_version")}")
 
     modImplementation(include(kotlin("reflect"))!!)
-
-    modImplementation(include("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")!!)
 
     modImplementation(include("com.github.meo209:KeventBus:${property("keventbus_version")}")!!)
 }
